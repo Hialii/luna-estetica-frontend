@@ -1,11 +1,9 @@
 name: Deploy para o S3
 
-
 on:
   push:
     branches: 
       - main
-
 
 jobs:
   deploy:
