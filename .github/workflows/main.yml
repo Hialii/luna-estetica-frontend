@@ -1,32 +1,32 @@
-# .github/workflows/deploy.yml
 name: Deploy para S3
 
 on:
   push:
     branches:
-      - main  # ou outra branch que você quiser
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v3
-
-      - name: Instalar dependências
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploy para S3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: dist # ou build, dependendo do seu projeto
+    - name: Checkout do repositório
+      uses: actions/checkout@v2  # Este passo usa a action para fazer checkout do código
+    
+    - name: Configuração da AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Deploy para o S3
+      uses: jakejarvis/s3-sync-action@master  # Essa é a action para fazer o upload para o S3
+      with:
+        args: --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SOURCE_DIR: dist  # A pasta que você quer enviar ao S3
